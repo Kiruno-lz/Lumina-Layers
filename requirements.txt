@@ -1,10 +1,8 @@
 gradio>=4.0.0
 numpy
-pillow
-scipy
+opencv-python
+Pillow
 trimesh
-opencv-python
-networkx
-opencv-python
-lxml
+scipy
 pystray
+lxml
