@@ -1,6 +1,6 @@
 """
 ╔═══════════════════════════════════════════════════════════════════════════════╗
-║                          LUMINA STUDIO v1.3                                   ║
+║                          LUMINA STUDIO v1.5                                   ║
 ║                    Multi-Material 3D Print Color System                       ║
 ╠═══════════════════════════════════════════════════════════════════════════════╣
 ║  Author: [MIN]                                                                ║
@@ -39,14 +39,15 @@ if __name__ == "__main__":
 
     # 1. Initialize System Tray
     tray = None
+    PORT = 7860 # Default fallback
     try:
         PORT = find_available_port(7860)
         tray = LuminaTray(port=PORT)
     except Exception as e:
         print(f"⚠️ Warning: Failed to initialize tray: {e}")
 
-    # 2. Start Browser Thread
-    threading.Thread(target=start_browser, daemon=True).start()
+    # 2. Start Browser Thread (Fix: Added args=(PORT,))
+    threading.Thread(target=start_browser, args=(PORT,), daemon=True).start()
 
     # 3. Launch Gradio App
     print(f"✨ Lumina Studio is running on http://127.0.0.1:{PORT}")
@@ -60,7 +61,7 @@ if __name__ == "__main__":
             show_error=True,
             prevent_thread_lock=True,
             favicon_path="icon.ico" if os.path.exists("icon.ico") else None,
-            css=CUSTOM_CSS, 
+            css=CUSTOM_CSS,
             theme=gr.themes.Soft()
         )
     except Exception as e:
@@ -87,6 +88,6 @@ if __name__ == "__main__":
                 time.sleep(1)
         except KeyboardInterrupt:
             pass
-            
+
     print("Stopping...")
     os._exit(0)
