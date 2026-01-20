@@ -29,15 +29,12 @@ def start_browser():
 
 if __name__ == "__main__":
 
-    # 1. Start System Tray
-    # macOS support: Uses run_detached() to avoid conflicts with Gradio
-    print("🚀 Starting System Tray...")
+    # 1. Initialize System Tray
+    tray = None
     try:
         tray = LuminaTray(port=PORT)
-        tray.run()
     except Exception as e:
-        print(f"⚠️ Warning: System tray failed to start: {e}")
-        print("   The application will continue without system tray support.")
+        print(f"⚠️ Warning: Failed to initialize tray: {e}")
 
     # 2. Start Browser Thread
     threading.Thread(target=start_browser, daemon=True).start()
@@ -62,10 +59,25 @@ if __name__ == "__main__":
     except BaseException as e:
         raise
 
-    # 4. Keep Main Thread Alive
-    try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        print("Stopping...")
-        os._exit(0)
+    # 4. Start System Tray (Blocking) or Keep Alive
+    if tray:
+        try:
+            print("🚀 Starting System Tray...")
+            tray.run()
+        except Exception as e:
+            print(f"⚠️ Warning: System tray crashed: {e}")
+            # Fallback if tray crashes immediately
+            try:
+                while True:
+                    time.sleep(1)
+            except KeyboardInterrupt:
+                pass
+    else:
+        try:
+            while True:
+                time.sleep(1)
+        except KeyboardInterrupt:
+            pass
+            
+    print("Stopping...")
+    os._exit(0)

@@ -80,26 +80,9 @@ class LuminaTray:
         self.setup_tray()
         self.running = True
         
-        # Run pystray in a separate thread to avoid blocking main execution
-        if sys.platform == "darwin":
-            # macOS: Use run_detached() to avoid blocking and conflicts with Gradio
-            # This allows the icon to run in the background without taking over the main thread
-            try:
-                def setup_icon(icon):
-                    """Setup callback for detached mode."""
-                    icon.visible = True
-                    print("✅ System tray icon started (macOS)")
-                
-                self.icon.run_detached(setup=setup_icon)
-            except Exception as e:
-                print(f"⚠️ Warning: Failed to start system tray on macOS: {e}")
-                print("   The application will continue without system tray support.")
-                self.running = False
-                
-        else:
-            try:
-                threading.Thread(target=self.icon.run, daemon=True).start()
-                print("✅ System tray icon started")
-            except Exception as e:
-                print(f"⚠️ Warning: Failed to start system tray: {e}")
-                self.running = False
+        print(f"✅ System tray icon starting on {sys.platform}")
+        try:
+            self.icon.run()
+        except Exception as e:
+            print(f"⚠️ Warning: Failed to start system tray: {e}")
+            self.running = False
